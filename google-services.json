@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "959522953642",
+    "project_id": "androidgk-67a06",
+    "storage_bucket": "androidgk-67a06.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:959522953642:android:96780a331f74c797e4b3d3",
+        "android_client_info": {
+          "package_name": "com.duong.ANDROIGK"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbtAA-jLQAZbLF6etTXXgcnMHRj5hkryk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
