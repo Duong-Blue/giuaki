@@ -1,135 +1,91 @@
 import React, { useState, useEffect } from 'react';
-import { TextInput, Button, View, Text, StyleSheet } from 'react-native';
-import { collection, getDocs, addDoc } from 'firebase/firestore';
-import { db } from './firebaseConfig'; // Đảm bảo đã cấu hình Firebase trong firebaseConfig.js
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  Modal,
+} from 'react-native';
+import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
+import WebView from 'react-native-webview';
+import Icon from 'react-native-vector-icons/Ionicons';
+import Slider from '@react-native-community/slider';
 
-// Khai báo kiểu dữ liệu người dùng
-interface User {
+interface Product {
   id: string;
   name: string;
-  age: number;
-  height: number;
-  weight: number;
-  gender: string;
+  description: string;
+  imageUrl: string[];
+  link: string;
 }
 
-const App = () => {
+const App: React.FC = ({ navigation }: any) => {
+  const [products, setProducts] = useState<Product[]>([]);
   const [name, setName] = useState<string>('');
-  const [age, setAge] = useState<string>('');
-  const [height, setHeight] = useState<string>('');
-  const [weight, setWeight] = useState<string>('');
-  const [gender, setGender] = useState<string>('');
-  const [users, setUsers] = useState<User[]>([]);
+  const [description, setDescription] = useState<string>('');
+  const [imageUrls, setImageUrls] = useState<string[]>(['']);
+  const [link, setLink] = useState<string>('');
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
 
-  // Hàm tính BMI
-  const calculateBMI = (weight: number, height: number) => {
-    return weight / (height * height);
-  };
-
-  // Thêm người dùng vào Firestore
-  const addUser = async () => {
-    if (name && age && height && weight && gender) {
-      const heightInMeters = parseFloat(height) / 100; // Chuyển đổi chiều cao sang mét
-      const bmi = calculateBMI(parseFloat(weight), heightInMeters);
-      let healthStatus = '';
-
-      // Đánh giá tình trạng sức khỏe dựa trên BMI
-      if (bmi < 18.5) {
-        healthStatus = 'Thiếu cân';
-      } else if (bmi >= 18.5 && bmi < 24.9) {
-        healthStatus = 'Bình thường';
-      } else if (bmi >= 25 && bmi < 29.9) {
-        healthStatus = 'Thừa cân';
-      } else {
-        healthStatus = 'Béo phì';
-      }
-
-      try {
-        await addDoc(collection(db, 'users'), {
-          name,
-          age: parseInt(age),
-          height: parseFloat(height),
-          weight: parseFloat(weight),
-          gender,
-          bmi,
-          healthStatus,
-        });
-        alert(`Chỉ số BMI của bạn là ${bmi.toFixed(2)} - ${healthStatus}`);
-        loadUsers();
-      } catch (error) {
-        console.log('Lỗi khi thêm người dùng: ', error);
-      }
-    } else {
-      alert('Vui lòng nhập đủ thông tin');
-    }
-  };
-
-  // Lấy danh sách người dùng từ Firestore
-  const loadUsers = async () => {
+  const loadProducts = async () => {
     try {
-      const snapshot = await getDocs(collection(db, 'users'));
-      const userList: User[] = snapshot.docs.map((doc) => ({
+      const snapshot = await getDocs(collection(db, 'products'));
+      const productList = snapshot.docs.map(doc => ({
         id: doc.id,
-        name: doc.data().name,
-        age: doc.data().age,
-        height: doc.data().height,
-        weight: doc.data().weight,
-        gender: doc.data().gender,
-      }));
-      setUsers(userList);
+        ...doc.data(),
+      } as Product));
+      setProducts(productList);
     } catch (error) {
-      console.log('Lỗi khi tải danh sách người dùng: ', error);
+      console.error('Error loading products:', error);
+      Alert.alert('Error', 'Could not load products');
     }
   };
 
   useEffect(() => {
-    loadUsers();
+    loadProducts();
   }, []);
 
-  return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Nhập họ tên"
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Nhập tuổi"
-        keyboardType="numeric"
-        value={age}
-        onChangeText={setAge}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Nhập chiều cao (cm)"
-        keyboardType="numeric"
-        value={height}
-        onChangeText={setHeight}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Nhập cân nặng (kg)"
-        keyboardType="numeric"
-        value={weight}
-        onChangeText={setWeight}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Nhập giới tính"
-        value={gender}
-        onChangeText={setGender}
-      />
-      <Button title="Tính BMI và Thêm Người Dùng" onPress={addUser} />
+  const navigateToCart = () => {
+    navigation.navigate('CartPage');
+  };
 
-      <Text style={styles.title}>Danh sách người dùng:</Text>
-      {users.map(user => (
-        <Text key={user.id} style={styles.user}>
-          {user.name} - Tuổi: {user.age} - BMI: {calculateBMI(user.weight, user.height / 100).toFixed(2)}
-        </Text>
-      ))}
-    </View>
+  const navigateToEvaluate = (product: Product) => {
+    navigation.navigate('Evaluate', { product });
+  };
+
+  return (
+    <ScrollView>
+      <View style={styles.container}>
+        <Text style={styles.header}>Product List</Text>
+
+        {products.map(product => (
+          <View key={product.id} style={styles.productContainer}>
+            {product.imageUrl.length > 0 && (
+              <Image style={styles.image} source={{ uri: product.imageUrl[0] }} />
+            )}
+            <Text style={styles.productName}>{product.name}</Text>
+            <Text>{product.description}</Text>
+            <WebView style={styles.webview} source={{ uri: product.link }} />
+            <View style={styles.actions}>
+              <TouchableOpacity
+                onPress={() => navigateToEvaluate(product)}
+                style={styles.evaluateButton}
+              >
+                <Icon name="star" size={24} color="#fff" />
+                <Text style={styles.evaluateText}>Evaluate</Text>
+              </TouchableOpacity>
+              <Button title="Go to Cart" onPress={navigateToCart} color="#4CAF50" />
+            </View>
+          </View>
+        ))}
+      </View>
+    </ScrollView>
   );
 };
 
@@ -139,21 +95,52 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
   },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingLeft: 10,
-  },
-  title: {
-    marginTop: 20,
-    fontSize: 18,
+  header: {
+    fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#4CAF50',
   },
-  user: {
+  productContainer: {
+    marginBottom: 20,
+    padding: 10,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    borderRadius: 5,
+  },
+  productName: {
     fontSize: 16,
-    marginTop: 5,
+    fontWeight: 'bold',
+    marginTop: 10,
+  },
+  webview: {
+    height: 200,
+    marginTop: 10,
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  evaluateButton: {
+    backgroundColor: '#FF9800',
+    padding: 10,
+    borderRadius: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  evaluateText: {
+    marginLeft: 5,
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
 

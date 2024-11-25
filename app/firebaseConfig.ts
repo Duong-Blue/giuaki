@@ -1,8 +1,9 @@
+// firebaseConfig.ts
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
-// Cấu hình Firebase (Chỉ cần thông tin cần thiết cho Firestore)
+// Cấu hình Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCWaz8WOK-DrLRkC1La3C6Y8ID-waN90g4",
   authDomain: "gkandroid-afea0.firebaseapp.com",
@@ -13,9 +14,10 @@ const firebaseConfig = {
   measurementId: "G-P0YTMQGDV3"
 };
 
-// Khởi tạo Firebase
+// Khởi tạo ứng dụng Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app); // Khởi tạo auth
-const db = getFirestore(app); // Sử dụng getFirestore thay vì initializeFirestore
+const auth = getAuth(app);
+const db = getFirestore(app);
 
+// Xuất cấu hình Firebase và db dưới dạng default
 export { auth, db };

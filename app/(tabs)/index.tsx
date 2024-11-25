@@ -11,9 +11,8 @@ export default function WelcomeScreen() {
       
       {/* Container chứa thông tin với border rộng */}
       <View style={styles.infoContainer}>
+        <Text style={styles.infoText}>Họ và Tên: Hồ Văn Duy</Text>
         <Text style={styles.infoText}>Họ và Tên: Nguyễn Thanh Dương</Text>
-        <Text style={styles.infoText}>Lớp: DCCNTT13.10.2</Text>
-        <Text style={styles.infoText}>MSV: 20220239</Text>
       </View>
 
       

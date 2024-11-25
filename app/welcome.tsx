@@ -9,7 +9,7 @@ export default function WelcomeScreen() {
     <View style={styles.container}>
       {/* Hình ảnh */}
       <Image 
-        source={require('../assets/images/icon.png')} // Thay thế bằng đường dẫn URL hình ảnh của bạn hoặc dùng hình ảnh nội bộ
+        source={require('../assets/images/th.png')} // Thay thế bằng đường dẫn URL hình ảnh của bạn hoặc dùng hình ảnh nội bộ
         style={styles.image}
       />
       
@@ -18,9 +18,9 @@ export default function WelcomeScreen() {
       
       {/* Container chứa thông tin với border rộng */}
       <View style={styles.infoContainer}>
+        <Text style={styles.infoText}>Họ và Tên: Hồ Văn Duy</Text>
         <Text style={styles.infoText}>Họ và Tên: Nguyễn Thanh Dương</Text>
-        <Text style={styles.infoText}>Lớp: DCCNTT13.10.2</Text>
-        <Text style={styles.infoText}>MSV: 20220239</Text>
+        
       </View>
 
       {/* Nút đăng nhập điều hướng đến trang login */}

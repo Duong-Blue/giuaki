@@ -4,7 +4,6 @@ import { Platform } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -15,25 +14,25 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        
+        headerShown: false, // Loại bỏ header mặc định
         tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {
-            // Use a transparent background on iOS to show the blur effect
             position: 'absolute',
+            bottom: 0, // Đảm bảo tab bar luôn ở cuối
+            backgroundColor: 'transparent',
+            elevation: 0,
           },
-          default: {},
+          default: {
+            backgroundColor: Colors[colorScheme ?? 'light'].tabBarBackground,
+          },
         }),
       }}>
       <Tabs.Screen
         name="index"
         options={{
           title: '',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color}
-            />,
-            headerShown: false
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
       <Tabs.Screen
@@ -41,15 +40,20 @@ export default function TabLayout() {
         options={{
           title: '',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-          headerShown: false
         }}
       />
       <Tabs.Screen
-        name="user"
+        name="cart"
         options={{
-          title: '',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-          headerShown: false
+          title: 'Cart',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="cart.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="evaluate"
+        options={{
+          tabBarLabel: 'Evaluate', // Đảm bảo hiển thị chữ Evaluate
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="star.fill" color={color} />,
         }}
       />
     </Tabs>
